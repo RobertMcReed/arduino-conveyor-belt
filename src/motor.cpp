@@ -46,30 +46,24 @@ void motorSetup() {
 }
 
 int motorDirection() {
-  int currentSpeed = stepperLeft.speed();
+  if (!motorSpeed) return 0;
 
-  if (!currentSpeed) return 0;
-
-  int dirVal = currentSpeed > 0 ? 1 : -1;
-
-  return dirVal * FORWARDS_MULTIPLIER;
+  return motorSpeed > 0 ? 1 : -1;
 }
 
 void motorOff() {
-  if (motorMode != OFF) {
-    motorMode = OFF;
-  }
+  motorSpeed = 0;
+  motorMode = OFF;
 }
 
 void setMotor(bool requestBackwards) {
   motorMode = requestBackwards ? BACKWARDS : FORWARDS;
-  float currentSpeed = motorSpeed;
 
-  if (!currentSpeed) {
-    currentSpeed = lastMotorSpeed;
+  if (!motorSpeed) {
+    motorSpeed = lastMotorSpeed;
   }
   
-  float newSpeed = abs(currentSpeed);
+  float newSpeed = abs(motorSpeed);
 
   int multiplier = MULTIPLIERS[(int)requestBackwards];
   newSpeed *= multiplier;
@@ -93,9 +87,9 @@ void motorSetSpeed(int speed) {
     else speed = -MAX_SPEED;
   }
 
+  motorSpeed = speed;
 
   if (speed) {
-    motorSpeed = speed;
     lastMotorSpeed = speed;
   }
 
@@ -109,9 +103,7 @@ void motorSetSpeed(int speed) {
 }
 
 void motorReverse() {
-  int currentDirection = motorDirection();
-
-  if (currentDirection > 0) {
+  if (motorDirection() > 0) {
     Serial.println("Setting motor backwards");
     motorBackwards();
   } else {
@@ -121,18 +113,7 @@ void motorReverse() {
 }
 
 void motorHandleLoop() {
-  if (motorMode == OFF && motorSpeed) {
-    if (motorSpeed > 0) {
-      motorSpeed = max(motorSpeed - 1, 0);
-    } else {
-      motorSpeed = min(motorSpeed + 1, 0);
-    }
-
-    stepperLeft.setSpeed(motorSpeed);
-    stepperRight.setSpeed(motorSpeed);
-  }
-
-  if (motorSpeed) {
+  if (motorMode != OFF) {
     stepperLeft.runSpeed();
     stepperRight.runSpeed();
   }

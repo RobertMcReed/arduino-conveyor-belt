@@ -8,7 +8,7 @@ void setup() {
   motorSetup();
 }
 
-const uint8_t bufSize = 80;
+const uint8_t bufSize = 20;
 char buf[bufSize];
 
 void loop() {
@@ -19,25 +19,32 @@ void loop() {
 
     if (!val) {
       if (!strcmp(buf, "O") || !strcmp(buf, "o") || !strcmp(buf, "0")) {
-        Serial.println("REQUEST OFF");
         motorOff();
       } else if (!strcmp(buf, "F") || !strcmp(buf, "f")) {
-        Serial.println("REQUEST FORWARDS");
         motorForwards();
       } else if (!strcmp(buf, "B") || !strcmp(buf, "b")) {
-        Serial.println("REQUEST BACKWARDS");
         motorBackwards();
-      } else if (!strcmp(buf, "p")) {
-        Serial.println("Moving 30 steps");
-        // motorMoveDistance(30l);
+      } else if (!strcmp(buf, "R") || !strcmp(buf, "r")) {
+        motorReverse();
       } else {
-        Serial.print("Unknown command: ");
+        Serial.print("***UNKNOWN ");
         Serial.println(buf);
       }
     } else {
-      Serial.print("REQUEST SPEED: ");
-      Serial.println(val);
-      motorSetSpeed(val);
+      bool isSpeed = false;
+      for (int i = 0; i < bufSize; i++) {
+        if (buf[i] == 0) break;
+        else if (buf[i] == 's') {
+          isSpeed = true;
+          break;
+        }
+      }
+
+      if (isSpeed) {
+        motorSetNextSpeed(val);
+      } else {
+        motorMoveDistance(val);
+      }
     }
   }
 }

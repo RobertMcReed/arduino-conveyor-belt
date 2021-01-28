@@ -27,6 +27,9 @@ void loop() {
       } else if (!strcmp(buf, "B") || !strcmp(buf, "b")) {
         Serial.println("REQUEST BACKWARDS");
         motorBackwards();
+      } else if (!strcmp(buf, "p")) {
+        Serial.println("Moving 30 steps");
+        // motorMoveDistance(30l);
       } else {
         Serial.print("Unknown command: ");
         Serial.println(buf);

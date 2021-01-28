@@ -13,5 +13,6 @@ void motorForwards();
 void motorForwards();
 void motorBackwards();
 void motorBackwards();
+void motorMoveDistance(int distance)
 
 #endif

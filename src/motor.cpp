@@ -14,6 +14,8 @@ const int MAX_SPEED = 1000;
 const bool backwards = true;
 const bool forwards = false;
 
+long targetDistance = 0;
+
 AccelStepper stepperLeft = AccelStepper(motorInterfaceType, stepPinLeft, dirPinLeft);
 AccelStepper stepperRight = AccelStepper(motorInterfaceType, stepPinRight, dirPinRight);
 
@@ -112,9 +114,22 @@ void motorReverse() {
   }
 }
 
+void motorMoveDistance(int distance) {
+  stepperLeft.move(distance);
+  stepperRight.move(distance);
+  targetDistance = distance;
+}
+
 void motorHandleLoop() {
   if (motorMode != OFF) {
-    stepperLeft.runSpeed();
-    stepperRight.runSpeed();
+    if (targetDistance) {
+      Serial.print("isRunning: ");
+      Serial.println(stepperLeft.isRunning());
+      stepperLeft.runSpeedToPosition();
+      stepperRight.runSpeedToPosition();
+    } else {
+      stepperLeft.runSpeed();
+      stepperRight.runSpeed();
+    }
   }
 }

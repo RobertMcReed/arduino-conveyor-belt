@@ -89,14 +89,15 @@ void setMotor(bool requestBackwards) {
     motorSpeed = lastMotorSpeed;
   }
   
+  Serial.print("***MOTOR_SPEED ");
+  Serial.println(motorSpeed);
+
   float newSpeed = abs(motorSpeed);
 
   int multiplier = MULTIPLIERS[(int)requestBackwards];
   newSpeed *= multiplier;
   motorSpeed = newSpeed;
 
-  Serial.print("***MOTOR_SPEED ");
-  Serial.println(motorSpeed * multiplier);
   stepperLeft.setSpeed(newSpeed);
   stepperRight.setSpeed(newSpeed);
   targetSteps = 0;

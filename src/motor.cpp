@@ -54,16 +54,18 @@ void motorSetup() {
   stepperRight.setSpeed(motorSpeed);
 }
 
-float distanceToMicroSteps(float distance) {
+double distanceToMicroSteps(float distance) {
   distance = abs(distance);
-  float numSteps = distance / distancePerRevolution * microStepsPerRevolution;
+  double stepsPerMM = microStepsPerRevolution / distancePerRevolution;
+  double numSteps = distance * stepsPerMM;
 
   return numSteps;
 }
 
-float microStepsToDistance(int steps) {
+double microStepsToDistance(int steps) {
   steps = abs(steps);
-  float distance = steps / microStepsPerRevolution * distancePerRevolution;
+  double distancePerStep = distancePerRevolution / microStepsPerRevolution;
+  double distance = steps * distancePerStep;
 
   return distance;
 }
@@ -88,15 +90,15 @@ void setMotor(bool requestBackwards) {
   if (!motorSpeed) {
     motorSpeed = lastMotorSpeed;
   }
-  
-  Serial.print("***MOTOR_SPEED ");
-  Serial.println(motorSpeed);
 
   float newSpeed = abs(motorSpeed);
 
   int multiplier = MULTIPLIERS[(int)requestBackwards];
   newSpeed *= multiplier;
   motorSpeed = newSpeed;
+
+  Serial.print("***MOTOR_SPEED ");
+  Serial.println(requestBackwards ? -abs(motorSpeed) : abs(motorSpeed));
 
   stepperLeft.setSpeed(newSpeed);
   stepperRight.setSpeed(newSpeed);
@@ -159,7 +161,7 @@ void motorMoveDistance(int distance) {
 
   if (targetDistance) {
     int stepsTaken = stepperLeft.currentPosition();
-    float distanceTraveled = microStepsToDistance(stepsTaken);
+    double distanceTraveled = microStepsToDistance(stepsTaken);
 
     if (targetDistance < 0) {
       distanceTraveled *= -1;

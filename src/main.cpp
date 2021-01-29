@@ -17,6 +17,10 @@ void loop() {
   if (readline(Serial.read(), buf, bufSize)) {
     int val = atoi(buf);
 
+    // send a debug message
+    Serial.print("+++");
+    Serial.println(buf);
+
     if (!val) {
       if (!strcmp(buf, "O") || !strcmp(buf, "o") || !strcmp(buf, "0")) {
         motorOff();
